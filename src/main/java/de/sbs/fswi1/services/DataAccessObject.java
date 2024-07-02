@@ -6,11 +6,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DataAccessObject {
 
-	public List<RestDTO> findAll() {
+	public String findAll() {
 
 		try (HttpClient client = HttpClient.newHttpClient()) {
 			HttpRequest request =
@@ -22,15 +23,35 @@ public class DataAccessObject {
 			// Send request and get response
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-			StringBuilder rawJSON = new StringBuilder(response.body()
+			String rawJSON = response.body()
 					.replace("[\n", "")
 					.replace("\n]", "")
 					.trim().replace("\n" +
 					"    ","")
 					.replace(" ", "")
 					.replace("\"\n", "\"")
-					.replace(",\n{", ",{"));
-			return null;
+					.replace(",\n{", ",{");
+
+			String[] jsonArray = rawJSON.split("\\},\\{");
+
+			for (int i = 0; i < jsonArray.length; i++) {
+				jsonArray[i] = jsonArray[i]
+						.replace("{", "")
+						.replace("\"", "")
+						.replace("}", "")
+						.replace("userId:", "")
+						.replace("id:", "")
+						.replace("body:", "")
+						.replace("title:", "");
+			}
+
+			List<RestDTO> rests = new ArrayList<>();
+			for (int i = 0; i < jsonArray.length; i++) {
+				String[] bufArray = jsonArray[i].split(",");
+				rests.add (new RestDTO(Long.parseLong(bufArray[0]), Long.parseLong(bufArray[1]), bufArray[2], bufArray[3].replace("\\n", " ")));
+			}
+
+			return rawJSON;
 
 		} catch (Exception e) {
 			e.printStackTrace();
