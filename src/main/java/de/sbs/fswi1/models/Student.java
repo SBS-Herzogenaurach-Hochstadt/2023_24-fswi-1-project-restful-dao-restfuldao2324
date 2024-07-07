@@ -8,15 +8,8 @@ import java.util.Objects;
 
 public class Student extends StudentDTO {
 
-    private Timestamp zeitstempel;
-
     public Student(String vorname, String nachname, String geburtsdatum, String klasse) {
         super(vorname, nachname, geburtsdatum, klasse);
-        zeitstempel = new Timestamp(System.nanoTime());
-    }
-
-    public long getZeitstempel() {
-        return zeitstempel.getTime();
     }
 
     public String getNachnameVorname() {
