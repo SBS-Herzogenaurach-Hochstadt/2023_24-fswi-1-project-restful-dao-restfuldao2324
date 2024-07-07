@@ -7,6 +7,8 @@ public class RestDTO {
 	private String title;
 	private String body;
 
+	public RestDTO() {}
+
 	public RestDTO(long userId, long id, String title, String body) {
 		this.userId = userId;
 		this.id = id;

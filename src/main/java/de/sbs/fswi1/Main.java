@@ -7,6 +7,6 @@ public class Main {
     public static void main(String[] args) {
 
         DataAccessObject dao = new DataAccessObject();
-        System.out.println(dao.findAll());
+        System.out.println(dao.findAll().get(0).getBody());
     }
 }
