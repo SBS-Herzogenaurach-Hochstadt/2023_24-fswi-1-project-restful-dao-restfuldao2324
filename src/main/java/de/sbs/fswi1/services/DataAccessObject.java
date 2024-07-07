@@ -3,6 +3,7 @@ package de.sbs.fswi1.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.sbs.fswi1.models.Student;
 import de.sbs.fswi1.models.StudentDTO;
 
 import java.net.HttpURLConnection;
@@ -15,6 +16,26 @@ import java.util.List;
 
 public class DataAccessObject {
 
+	private ObjectMapper objectMapper = new ObjectMapper();
+
+	public void save(Student student) {
+
+		try (HttpClient client = HttpClient.newHttpClient()) {
+			HttpRequest request =
+					HttpRequest.newBuilder()
+							.uri(new URI("http://localhost:8080/studenten"))
+							.header("Content-Type", "application/json")
+							.POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(student)))
+							.build();
+
+			client.send(request, HttpResponse.BodyHandlers.ofString());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	public List<StudentDTO> findAll() {
 
 		List<StudentDTO> dtos = new ArrayList<>();
@@ -26,15 +47,14 @@ public class DataAccessObject {
 							.header("Accept", "application/json")
 							.GET()
 							.build();
-			
+
 			// Send request and get response
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
 			if (response.statusCode() == HttpURLConnection.HTTP_OK) {
-				ObjectMapper objectMapper = new ObjectMapper();
 				JsonNode nodes = objectMapper.readTree(response.body());
 				if (nodes != null) {
-					 dtos = objectMapper.readValue(response.body(), new TypeReference<>() {});
+					dtos = objectMapper.readValue(response.body(), new TypeReference<>() {
+					});
 				}
 			}
 		} catch (Exception e) {
