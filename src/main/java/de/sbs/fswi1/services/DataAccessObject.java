@@ -11,7 +11,9 @@ import java.util.List;
 
 public class DataAccessObject {
 
-	public String findAll() {
+	public List<RestDTO> findAll() {
+
+		List<RestDTO> rests = new ArrayList<>();
 
 		try (HttpClient client = HttpClient.newHttpClient()) {
 			HttpRequest request =
@@ -45,22 +47,14 @@ public class DataAccessObject {
 						.replace("title:", "");
 			}
 
-			List<RestDTO> rests = new ArrayList<>();
-			for (int i = 0; i < jsonArray.length; i++) {
-				String[] bufArray = jsonArray[i].split(",");
-				rests.add (new RestDTO(Long.parseLong(bufArray[0]), Long.parseLong(bufArray[1]), bufArray[2], bufArray[3].replace("\\n", " ")));
-			}
-
-			return rawJSON;
+            for (String dataset : jsonArray) {
+                String[] bufArray = dataset.split(",");
+                rests.add(new RestDTO(Long.parseLong(bufArray[0]), Long.parseLong(bufArray[1]), bufArray[2], bufArray[3].replace("\\n", " ")));
+            }
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
-	}
-
-	private String hilfsmethode(String body) {
-		return null;
+		return rests;
 	}
 }
-
